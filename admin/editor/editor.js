@@ -428,6 +428,18 @@
   }
 
   // --- 3단계: 빈 태그 정리 ---
+  function isBlankParagraph(el) {
+    return el.tagName === 'P' && isEmptyNode(el);
+  }
+
+  /** el부터 한쪽 끝까지 빈 문단만 있으면 true */
+  function blankEdge(el, dir) {
+    for (var s = el[dir]; s; s = s[dir]) {
+      if (!isBlankParagraph(s)) return false;
+    }
+    return true;
+  }
+
   function removeEmpty(container) {
     // 안쪽부터 지운다.
     var all = Array.prototype.slice.call(container.querySelectorAll('*')).reverse();
@@ -438,7 +450,16 @@
         if (el.parentNode.tagName === 'PRE') return;
         if (isEmptyNode(el) && !el.querySelector('br')) el.parentNode.removeChild(el);
         else if (isEmptyNode(el)) unwrap(el);
-      } else if (['P', 'H2', 'H3', 'H4', 'BLOCKQUOTE', 'UL', 'OL'].indexOf(tag) !== -1) {
+      } else if (tag === 'P') {
+        // 문단 사이의 빈 문단은 빈 줄로 남기고, 맨 앞·맨 뒤의 빈 문단만 지운다.
+        if (!isEmptyNode(el)) return;
+        if (blankEdge(el, 'previousElementSibling') || blankEdge(el, 'nextElementSibling')) {
+          el.parentNode.removeChild(el);
+        } else {
+          el.textContent = '';
+          el.appendChild(el.ownerDocument.createElement('br'));
+        }
+      } else if (['H2', 'H3', 'H4', 'BLOCKQUOTE', 'UL', 'OL'].indexOf(tag) !== -1) {
         if (isEmptyNode(el)) el.parentNode.removeChild(el);
       } else if (tag === 'LI') {
         if (isEmptyNode(el) && !el.querySelector('ul,ol')) el.parentNode.removeChild(el);
