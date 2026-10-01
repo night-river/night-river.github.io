@@ -1,4 +1,59 @@
 {
   "version": 1,
-  "stickers": []
+  "stickers": [
+    {
+      "id": "st_sn3tzw",
+      "src": "/stickers/img/ry9v7wjt.png",
+      "x": 0.0259,
+      "y": 0.6089,
+      "w": 0.15,
+      "rotate": 0,
+      "z": 1
+    },
+    {
+      "id": "st_94wzj0",
+      "src": "/stickers/img/7i209z3r.webp",
+      "x": 0.8794,
+      "y": 0.0325,
+      "w": 0.0985,
+      "rotate": -17.4,
+      "z": 2
+    },
+    {
+      "id": "st_3ygnn8",
+      "src": "/stickers/img/ale18uph.png",
+      "x": 0.3231,
+      "y": 0.0121,
+      "w": 0.1145,
+      "rotate": 0,
+      "z": 3
+    },
+    {
+      "id": "st_1vybgn",
+      "src": "/stickers/img/lhc1m7p6.png",
+      "x": 0.0105,
+      "y": 0.3671,
+      "w": 0.0884,
+      "rotate": 0,
+      "z": 4
+    },
+    {
+      "id": "st_ciakbn",
+      "src": "/stickers/img/zel8fktg.png",
+      "x": 0.8879,
+      "y": 0.7708,
+      "w": 0.1003,
+      "rotate": 0,
+      "z": 5
+    },
+    {
+      "id": "st_14admo",
+      "src": "/stickers/img/qw0ow4dt.png",
+      "x": 0.8093,
+      "y": 0.8605,
+      "w": 0.0919,
+      "rotate": 0,
+      "z": 6
+    }
+  ]
 }
