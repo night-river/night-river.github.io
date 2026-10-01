@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="공부·일기 블로그"><meta name="robots" content="noindex"><title>샘플 글 | memo pad</title><style>/*
+ * 모바일 레이아웃. 이 파일 전체가 아래 @media 안에 들어간다.
+ * 브레이크포인트 값은 src/config/site.ts의 MOBILE_BREAKPOINT에서 빌드 시 채워진다(BaseLayout 참고).
+ * global.css·prose.css는 base 레이어에 있고, 이 파일은 그보다 뒤인 mobile 레이어라서 항상 우선한다.
+ */
+@layer base, mobile;
+
+@layer mobile {
+  @media (max-width: 768px) {
+    .pad {
+      --margin-width: var(--margin-width-mobile);
+      grid-template-columns: minmax(0, 1fr);
+      padding-left: var(--margin-width);
+    }
+
+    .pad-content {
+      padding-left: var(--space-2);
+      padding-right: var(--space-2);
+    }
+
+    /* 좌측 여백 메뉴 → 왼쪽에서 밀려 나오는 드로어 */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      align-self: normal;
+      z-index: 30;
+      width: min(var(--drawer-width), 85vw);
+      max-height: none;
+      background-color: var(--color-paper);
+      background-image: linear-gradient(
+        to bottom,
+        transparent calc(var(--line-height-rule) - 1px),
+        var(--color-rule) calc(var(--line-height-rule) - 1px)
+      );
+      background-size: 100% var(--line-height-rule);
+      background-position: 0 var(--rule-offset);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      visibility: hidden;
+    }
+
+    .side-menu.is-open,
+    .side-menu.is-dragging {
+      visibility: visible;
+    }
+
+    .side-menu.is-open {
+      transform: translateX(0);
+    }
+
+    .side-menu.is-dragging {
+      transition: none;
+    }
+
+    .drawer-backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: var(--color-backdrop);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .drawer-backdrop.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-backdrop.is-dragging {
+      transition: none;
+    }
+
+    /* 드로어가 열린 동안 배경 스크롤 잠금 */
+    html.drawer-locked,
+    html.drawer-locked body {
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+  }
+}
+</style><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.CYDbzu1r.js"></script><link rel="stylesheet" href="/_astro/BaseLayout.BGVTg6gk.css"></head><body><div class="pad"><nav id="side-menu" class="side-menu" aria-label="메뉴"><a class="site-title" href="/">memo pad</a><ul><li><a href="/category/sql/">SQL</a></li><li><a href="/category/python/">Python</a></li><li><a href="/category/adsp/">ADsP</a></li><li><a href="/category/private/">Private</a></li></ul><form class="menu-search" action="/search/" method="get" role="search"><label class="visually-hidden" for="menu-search-input">블로그 검색</label><input id="menu-search-input" type="search" name="q" placeholder="검색" autocomplete="off"></form></nav><div id="drawer-backdrop" class="drawer-backdrop"></div><script type="module">var e=`night-river`;`${e}`,`${e}`;var t=window.matchMedia(`(max-width: 768px)`),n=8,r=!1,i=null,a=()=>document.getElementById(`side-menu`),o=()=>document.getElementById(`drawer-backdrop`);function s(){let e=a();e&&(e.inert=t.matches&&!r)}function c(){let e=a(),t=o();e?.classList.remove(`is-dragging`),t?.classList.remove(`is-dragging`),e&&(e.style.transform=``),t&&(t.style.opacity=``)}function l(e){r=e&&t.matches,c(),a()?.classList.toggle(`is-open`,r),o()?.classList.toggle(`is-visible`,r),document.documentElement.classList.toggle(`drawer-locked`,r),s()}function u(e){if(!t.matches||e.touches.length!==1)return;let n=a();if(!n)return;let s=e.touches[0],c=null;!r&&s.clientX<=24?c=`open`:r&&(n.contains(e.target)||e.target===o())&&(c=`close`),c&&(i={mode:c,startX:s.clientX,startY:s.clientY,dx:0,width:n.getBoundingClientRect().width,horizontal:null})}function d(e){if(!i)return;let t=e.touches[0],r=t.clientX-i.startX,s=t.clientY-i.startY;if(i.horizontal===null){if(Math.abs(r)<n&&Math.abs(s)<n)return;if(i.horizontal=Math.abs(r)>Math.abs(s),!i.horizontal){i=null;return}a()?.classList.add(`is-dragging`),o()?.classList.add(`is-dragging`,`is-visible`)}e.preventDefault(),i.dx=r;let c=i.mode===`open`?-i.width:0,l=Math.min(0,Math.max(-i.width,c+r)),u=a(),d=o();u&&(u.style.transform=`translateX(${l}px)`),d&&(d.style.opacity=String(1+l/i.width))}function f(){if(!i)return;let e=i;i=null,e.horizontal&&(e.mode===`open`?l(e.dx>=60):l(e.dx>-60))}function p(){i&&(i=null,l(r))}document.addEventListener(`touchstart`,u,{passive:!0}),document.addEventListener(`touchmove`,d,{passive:!1}),document.addEventListener(`touchend`,f),document.addEventListener(`touchcancel`,p),document.addEventListener(`keydown`,e=>{e.key===`Escape`&&r&&l(!1)}),document.addEventListener(`click`,e=>{r&&e.target===o()&&l(!1)}),t.addEventListener(`change`,()=>l(!1)),document.addEventListener(`astro:before-swap`,()=>l(!1)),document.addEventListener(`astro:page-load`,()=>l(!1));</script><main class="pad-content"><article><header class="page-header"><h1 class="page-title">SQLD 정규화 정리</h1><p class="page-meta"><time datetime="2026-10-01T21:30:00+09:00">2026. 10. 1. 21:30</time> · SQL</p></header><div class="prose"><p>정규화는 데이터의 <strong>중복을 줄이고</strong> 이상 현상(삽입·수정·삭제 이상)을 막기 위해 테이블을 나누는 과정이다. 이 문단은 여러 줄로 넘어가도 글자가 괘선 위에 놓이는지 확인하기 위한 <em>긴 문장</em>이다.<a href="/">링크</a>와 <code>inline code</code>, <u>밑줄</u>, <s>취소선</s>,<span class="hl-red">빨간 강조</span>, <span class="hl-yellow">노란 형광펜</span>도 함께 본다.</p><h2>1. 정규형의 종류</h2><p>대표적인 정규형은 다음과 같다.</p><ul><li>제1정규형: 모든 속성 값이 원자값</li><li>제2정규형: 부분 함수 종속 제거<ul><li>기본키가 복합키일 때만 해당</li></ul></li><li>제3정규형: 이행 함수 종속 제거</li></ul><h3>1-1. 순서가 있는 목록</h3><ol><li>테이블을 분석한다.</li><li>함수 종속을 찾는다.</li><li>테이블을 분해한다.</li></ol><h4>참고 (h4 제목)</h4><blockquote><p>정규화가 항상 정답은 아니다. 조회 성능을 위해 일부러 반정규화를 하기도 한다.</p></blockquote><h2>2. 표</h2><table><thead><tr><th>정규형</th><th>제거 대상</th><th>예시</th></tr></thead><tbody><tr><td>1NF</td><td>반복 그룹</td><td>전화번호 여러 개를 한 칸에</td></tr><tr><td>2NF</td><td>부분 종속</td><td>(학번, 과목) → 학생 이름</td></tr><tr><td>3NF</td><td>이행 종속</td><td>학번 → 학과 → 학과장</td></tr></tbody></table><h2>3. 코드</h2><pre><code class="language-sql">SELECT d.dept_name, COUNT(*) AS cnt
+FROM employee e
+JOIN department d ON e.dept_id = d.dept_id
+GROUP BY d.dept_name
+HAVING COUNT(*) &gt;= 3;</code></pre><pre><code class="language-python">def normalize(rows):
+    &quot;&quot;&quot;중복 행을 제거한다.&quot;&quot;&quot;
+    return sorted(set(rows))</code></pre><h2>4. 이미지</h2><img src="/images/posts/sample/landscape.svg" alt="샘플 풍경 이미지" width="600" height="250"><p>이미지 아래 문단도 다시 괘선 위에서 시작해야 한다.</p><hr><p>끝.</p></div></article></main></div></body></html><script type="module">function e(e){let t=parseFloat(getComputedStyle(document.documentElement).getPropertyValue(`--line-height-rule`));if(!t)return;e.style.marginBottom=``;let n=e.getBoundingClientRect().height,r=Math.ceil(n/t)*t-n,i=parseFloat(getComputedStyle(e).marginBottom)||0;e.style.marginBottom=`${i+r}px`}function t(){document.querySelectorAll(`.prose img`).forEach(t=>{t.complete?e(t):t.addEventListener(`load`,()=>e(t),{once:!0})})}document.addEventListener(`astro:page-load`,t);var n;window.addEventListener(`resize`,()=>{clearTimeout(n),n=window.setTimeout(t,150)});</script>
