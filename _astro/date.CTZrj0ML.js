@@ -1,0 +1,1 @@
+import{a as e}from"./site.BGDyEnZ7.js";var t=new Intl.DateTimeFormat(`ko-KR`,{timeZone:e,year:`numeric`,month:`numeric`,day:`numeric`}),n=new Intl.DateTimeFormat(`ko-KR`,{timeZone:e,year:`numeric`,month:`numeric`,day:`numeric`,hour:`2-digit`,minute:`2-digit`,hourCycle:`h23`});function r(e){return t.format(e)}function i(e){return n.format(e)}export{i as n,r as t};

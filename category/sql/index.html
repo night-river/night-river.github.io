@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="공부·일기 블로그"><title>SQL | memo pad</title><style>/*
+ * 모바일 레이아웃. 이 파일 전체가 아래 @media 안에 들어간다.
+ * 브레이크포인트 값은 src/config/site.ts의 MOBILE_BREAKPOINT에서 빌드 시 채워진다(BaseLayout 참고).
+ * global.css·prose.css는 base 레이어에 있고, 이 파일은 그보다 뒤인 mobile 레이어라서 항상 우선한다.
+ */
+@layer base, mobile;
+
+@layer mobile {
+  @media (max-width: 768px) {
+    .pad {
+      --margin-width: var(--margin-width-mobile);
+      grid-template-columns: minmax(0, 1fr);
+      padding-left: var(--margin-width);
+    }
+
+    .pad-content {
+      padding-left: var(--space-2);
+      padding-right: var(--space-2);
+    }
+
+    /* 좌측 여백 메뉴 → 왼쪽에서 밀려 나오는 드로어 */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      align-self: normal;
+      z-index: 30;
+      width: min(var(--drawer-width), 85vw);
+      max-height: none;
+      background-color: var(--color-paper);
+      background-image: linear-gradient(
+        to bottom,
+        transparent calc(var(--line-height-rule) - 1px),
+        var(--color-rule) calc(var(--line-height-rule) - 1px)
+      );
+      background-size: 100% var(--line-height-rule);
+      background-position: 0 var(--rule-offset);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      visibility: hidden;
+    }
+
+    .side-menu.is-open,
+    .side-menu.is-dragging {
+      visibility: visible;
+    }
+
+    .side-menu.is-open {
+      transform: translateX(0);
+    }
+
+    .side-menu.is-dragging {
+      transition: none;
+    }
+
+    .drawer-backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: var(--color-backdrop);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .drawer-backdrop.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-backdrop.is-dragging {
+      transition: none;
+    }
+
+    /* 드로어가 열린 동안 배경 스크롤 잠금 */
+    html.drawer-locked,
+    html.drawer-locked body {
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+  }
+}
+</style><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.CYDbzu1r.js"></script><link rel="stylesheet" href="/_astro/BaseLayout.D7AWmk4Z.css"></head><body><div class="pad"><nav id="side-menu" class="side-menu" aria-label="메뉴"><a class="site-title" href="/">memo pad</a><ul><li><a href="/category/sql/" aria-current="page">SQL</a></li><li><a href="/category/python/">Python</a></li><li><a href="/category/adsp/">ADsP</a></li><li><a href="/category/private/">Private</a></li></ul><form class="menu-search" action="/search/" method="get" role="search"><label class="visually-hidden" for="menu-search-input">블로그 검색</label><input id="menu-search-input" type="search" name="q" placeholder="검색" autocomplete="off"></form></nav><div id="drawer-backdrop" class="drawer-backdrop"></div><script type="module" src="/_astro/SideMenu.astro_astro_type_script_index_0_lang.CBNUrC5z.js"></script><main class="pad-content"><header class="page-header list-header"><h1 class="page-title">SQL</h1><a class="write-button" href="/admin/editor/" data-admin-only hidden>글쓰기</a></header><ul class="post-list"><li><a href="/posts/20260919-smp011/">인덱스 기초</a><time datetime="2026-09-19T12:11:00.000Z">2026. 9. 19.</time></li><li><a href="/posts/20260918-smp010/">트랜잭션과 ACID</a><time datetime="2026-09-18T12:10:00.000Z">2026. 9. 18.</time></li><li><a href="/posts/20260917-smp009/">윈도우 함수</a><time datetime="2026-09-17T12:09:00.000Z">2026. 9. 17.</time></li><li><a href="/posts/20260916-smp008/">서브쿼리</a><time datetime="2026-09-16T12:08:00.000Z">2026. 9. 16.</time></li><li><a href="/posts/20260915-smp007/">SQLD 정규화 정리</a><time datetime="2026-09-15T12:30:00.000Z">2026. 9. 15.</time></li><li><a href="/posts/20260914-smp006/">JOIN 종류 정리</a><time datetime="2026-09-14T12:06:00.000Z">2026. 9. 14.</time></li></ul><nav class="pagination" aria-label="페이지"><span class="is-disabled">이전</span><span aria-current="page">1</span><a href="/category/sql/2/">2</a><a href="/category/sql/2/" rel="next">다음</a></nav></main></div></body></html><script type="module" src="/_astro/BaseLayout.astro_astro_type_script_index_0_lang.CglKDg0H.js"></script>

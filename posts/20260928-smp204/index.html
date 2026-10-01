@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="Private 카테고리의 잠긴 글입니다."><title>Private | memo pad</title><style>/*
+ * 모바일 레이아웃. 이 파일 전체가 아래 @media 안에 들어간다.
+ * 브레이크포인트 값은 src/config/site.ts의 MOBILE_BREAKPOINT에서 빌드 시 채워진다(BaseLayout 참고).
+ * global.css·prose.css는 base 레이어에 있고, 이 파일은 그보다 뒤인 mobile 레이어라서 항상 우선한다.
+ */
+@layer base, mobile;
+
+@layer mobile {
+  @media (max-width: 768px) {
+    .pad {
+      --margin-width: var(--margin-width-mobile);
+      grid-template-columns: minmax(0, 1fr);
+      padding-left: var(--margin-width);
+    }
+
+    .pad-content {
+      padding-left: var(--space-2);
+      padding-right: var(--space-2);
+    }
+
+    /* 좌측 여백 메뉴 → 왼쪽에서 밀려 나오는 드로어 */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      align-self: normal;
+      z-index: 30;
+      width: min(var(--drawer-width), 85vw);
+      max-height: none;
+      background-color: var(--color-paper);
+      background-image: linear-gradient(
+        to bottom,
+        transparent calc(var(--line-height-rule) - 1px),
+        var(--color-rule) calc(var(--line-height-rule) - 1px)
+      );
+      background-size: 100% var(--line-height-rule);
+      background-position: 0 var(--rule-offset);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      visibility: hidden;
+    }
+
+    .side-menu.is-open,
+    .side-menu.is-dragging {
+      visibility: visible;
+    }
+
+    .side-menu.is-open {
+      transform: translateX(0);
+    }
+
+    .side-menu.is-dragging {
+      transition: none;
+    }
+
+    .drawer-backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: var(--color-backdrop);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .drawer-backdrop.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-backdrop.is-dragging {
+      transition: none;
+    }
+
+    /* 드로어가 열린 동안 배경 스크롤 잠금 */
+    html.drawer-locked,
+    html.drawer-locked body {
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+  }
+}
+</style><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.CYDbzu1r.js"></script><link rel="stylesheet" href="/_astro/BaseLayout.D7AWmk4Z.css"></head><body><div class="pad"><nav id="side-menu" class="side-menu" aria-label="메뉴"><a class="site-title" href="/">memo pad</a><ul><li><a href="/category/sql/">SQL</a></li><li><a href="/category/python/">Python</a></li><li><a href="/category/adsp/">ADsP</a></li><li><a href="/category/private/">Private</a></li></ul><form class="menu-search" action="/search/" method="get" role="search"><label class="visually-hidden" for="menu-search-input">블로그 검색</label><input id="menu-search-input" type="search" name="q" placeholder="검색" autocomplete="off"></form></nav><div id="drawer-backdrop" class="drawer-backdrop"></div><script type="module" src="/_astro/SideMenu.astro_astro_type_script_index_0_lang.CBNUrC5z.js"></script><main class="pad-content"><article data-locked-post><header class="page-header"><h1 class="page-title" data-locked-title>Private</h1><p class="page-meta"><span data-locked-meta></span><a href="/category/private/">Private</a></p></header><script type="application/json" id="locked-payload">{"v":1,"salt":"ePOxZyZo9cr4DyWNT71AyA==","iter":600000,"verifier":{"iv":"1ryvqwIcL/lOoPnT","ct":"TB4fwk/POWMHJD8Wib5pBOdOCx5TIFwAGr6cE4hJVFuktVaF"},"data":{"iv":"h2tdV/wK+aIV4l9t","ct":"NrwQUhf9ObZwNu162VsWjkpWksaZPB22Qis7dsD/gr9HLZOXeQj7tAPaRabdgnETSvWO5WQQfN9HtEFYXt8Q7EAnWoe2/L3Ay9Hc3jvhBlpIJhTd9EHr32q2kbbyYdTrRC9bsz8/eTCyOJU1R0FL9Y9nVH6MUUBeSUgdORIJwx3T9p3MjdCJtR10YTpFqrVJQPs8T3IqNq4j5aVRRuPVVLvrN4iax9Wx/3eZu67QPjvNmDeZt3RjpKsbe+fFYM3pm7acnIHoEb1SZpWriEMpdwMn66AmAu0YeRIFHlebfG5lFTk="}}</script><form class="lock-gate" data-lock-gate hidden><p>잠긴 카테고리입니다. 비밀번호를 입력하세요.</p><div class="lock-gate-row"><label class="visually-hidden" for="lock-password">비밀번호</label><input id="lock-password" type="password" name="password" autocomplete="current-password" required><button type="submit">열기</button></div><p class="lock-gate-status" data-lock-status role="status" aria-live="polite"></p></form><div class="prose" data-locked-body hidden></div></article><script type="module" src="/_astro/LockedPost.astro_astro_type_script_index_0_lang.B-B6GsVf.js"></script></main></div></body></html><script type="module" src="/_astro/BaseLayout.astro_astro_type_script_index_0_lang.CglKDg0H.js"></script>

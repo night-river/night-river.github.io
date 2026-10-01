@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="description" content="공부·일기 블로그"><meta name="robots" content="noindex"><title>연결 테스트 | memo pad</title><style>/*
+ * 모바일 레이아웃. 이 파일 전체가 아래 @media 안에 들어간다.
+ * 브레이크포인트 값은 src/config/site.ts의 MOBILE_BREAKPOINT에서 빌드 시 채워진다(BaseLayout 참고).
+ * global.css·prose.css는 base 레이어에 있고, 이 파일은 그보다 뒤인 mobile 레이어라서 항상 우선한다.
+ */
+@layer base, mobile;
+
+@layer mobile {
+  @media (max-width: 768px) {
+    .pad {
+      --margin-width: var(--margin-width-mobile);
+      grid-template-columns: minmax(0, 1fr);
+      padding-left: var(--margin-width);
+    }
+
+    .pad-content {
+      padding-left: var(--space-2);
+      padding-right: var(--space-2);
+    }
+
+    /* 좌측 여백 메뉴 → 왼쪽에서 밀려 나오는 드로어 */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      align-self: normal;
+      z-index: 30;
+      width: min(var(--drawer-width), 85vw);
+      max-height: none;
+      background-color: var(--color-paper);
+      background-image: linear-gradient(
+        to bottom,
+        transparent calc(var(--line-height-rule) - 1px),
+        var(--color-rule) calc(var(--line-height-rule) - 1px)
+      );
+      background-size: 100% var(--line-height-rule);
+      background-position: 0 var(--rule-offset);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+      transform: translateX(-100%);
+      transition: transform 0.25s ease;
+      visibility: hidden;
+    }
+
+    .side-menu.is-open,
+    .side-menu.is-dragging {
+      visibility: visible;
+    }
+
+    .side-menu.is-open {
+      transform: translateX(0);
+    }
+
+    .side-menu.is-dragging {
+      transition: none;
+    }
+
+    .drawer-backdrop {
+      display: block;
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      background: var(--color-backdrop);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .drawer-backdrop.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer-backdrop.is-dragging {
+      transition: none;
+    }
+
+    /* 드로어가 열린 동안 배경 스크롤 잠금 */
+    html.drawer-locked,
+    html.drawer-locked body {
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+  }
+}
+</style><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.CYDbzu1r.js"></script><link rel="stylesheet" href="/_astro/BaseLayout.D7AWmk4Z.css"></head><body><div class="pad"><nav id="side-menu" class="side-menu" aria-label="메뉴"><a class="site-title" href="/">memo pad</a><ul><li><a href="/category/sql/">SQL</a></li><li><a href="/category/python/">Python</a></li><li><a href="/category/adsp/">ADsP</a></li><li><a href="/category/private/">Private</a></li></ul><form class="menu-search" action="/search/" method="get" role="search"><label class="visually-hidden" for="menu-search-input">블로그 검색</label><input id="menu-search-input" type="search" name="q" placeholder="검색" autocomplete="off"></form></nav><div id="drawer-backdrop" class="drawer-backdrop"></div><script type="module" src="/_astro/SideMenu.astro_astro_type_script_index_0_lang.CBNUrC5z.js"></script><main class="pad-content"><header class="page-header"><h1 class="page-title">연결 테스트</h1></header><p class="admin-missing" data-admin-missing hidden>관리자 토큰이 없습니다. <a href="/admin/">관리 페이지</a>에서 토큰을 먼저 입력하세요.</p><div data-admin-only hidden><form class="admin-form" id="admin-test"><p>night-river/blog-source 저장소의 <strong>admin-test</strong> 브랜치에 테스트 커밋을 몇 개 만들고, 마지막에 테스트 파일을 모두 지웁니다. 블로그에는 반영되지 않습니다.</p><label class="admin-check">테스트할 이미지 (선택, gif 권장):<input type="file" name="image" accept="image/png,image/jpeg,image/gif,image/webp"></label><div class="admin-row"><button class="admin-button" type="submit">테스트 시작</button></div></form><ol class="admin-log" id="admin-test-log" aria-live="polite"></ol></div></main></div></body></html><script type="module" src="/_astro/BaseLayout.astro_astro_type_script_index_0_lang.CglKDg0H.js"></script><script type="module" src="/_astro/index.astro_astro_type_script_index_0_lang.QsNm3WTG.js"></script>

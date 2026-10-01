@@ -1,0 +1,1 @@
+var e=`blog-admin-token`;function t(t){try{return t.getItem(e)}catch{return null}}function n(t){try{t.removeItem(e)}catch{}}function r(){return t(localStorage)??t(sessionStorage)}function i(){return!!r()}function a(t,n){o(),(n?localStorage:sessionStorage).setItem(e,t)}function o(){n(localStorage),n(sessionStorage)}export{a as i,r as n,i as r,o as t};
