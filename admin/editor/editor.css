@@ -158,8 +158,11 @@
 }
 
 /* 편집 영역: 자기 자신의 괘선을 그려, 화면 어디에 있어도 글자가 괘선 위에 놓이게 한다.
-   위쪽 여백은 editor-page.ts(alignBodyToRules)가 페이지 괘선에 맞춰 반 줄 안에서 조절한다. */
+   위쪽 여백은 editor-page.ts(alignBodyToRules)가 페이지 괘선에 맞춰 반 줄 안에서 조절한다.
+   flow-root: 첫 블록(제목 2 등)의 위쪽 여백이 편집 영역의 위쪽 여백과 겹쳐(margin collapse) 밖으로 빠지면
+   조절한 여백이 무시되어 괘선이 어긋나므로, 자식 여백을 편집 영역 안에 가둔다. */
 .be-body {
+  display: flow-root;
   min-height: calc(var(--line-height-rule) * 14);
   margin-top: var(--line-height-rule);
   padding: 0 var(--space-1);

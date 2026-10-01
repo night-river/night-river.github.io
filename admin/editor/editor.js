@@ -817,15 +817,171 @@
       changed();
     }
 
+    // ---------- 인라인 style 정리 ----------
+    // Chrome은 제목과 문단을 합치거나(Backspace·Delete) 문단 형식을 바꿀 때 원래 글꼴·크기를
+    // <span style="font-family…; font-size…">로 붙인다. 저장할 때는 지워지지만 편집 중에는 제목 글꼴·크기가
+    // 그대로 보이므로, 생기는 즉시 지워 편집 화면을 저장 결과와 같게 둔다. (이미지는 괘선 맞춤용 style이 있어 제외)
+    function removeStyles(root) {
+      var styled = Array.prototype.slice.call(root.querySelectorAll('[style]:not(img)'));
+      styled.forEach(function (el) {
+        el.removeAttribute('style');
+        if (el.tagName === 'SPAN' && !el.attributes.length) unwrap(el);
+      });
+      return styled.length > 0;
+    }
+
+    function stripInlineStyles() {
+      if (!body.querySelector('[style]:not(img)')) return;
+      // 노드를 옮기면 선택 위치가 흐트러지므로, 글자 노드 기준 위치를 기억했다가 되돌린다.
+      var sel = window.getSelection();
+      var pos = sel && sel.rangeCount ? [sel.anchorNode, sel.anchorOffset, sel.focusNode, sel.focusOffset] : null;
+      if (pos) {
+        Array.prototype.slice.call(body.querySelectorAll('span[style]')).forEach(function (el) {
+          if (el.attributes.length > 1) return;
+          var parent = el.parentNode;
+          var idx = Array.prototype.indexOf.call(parent.childNodes, el);
+          for (var k = 0; k < 4; k += 2) {
+            if (pos[k] === el) {
+              pos[k] = parent;
+              pos[k + 1] = idx + pos[k + 1];
+            } else if (pos[k] === parent && pos[k + 1] > idx) {
+              pos[k + 1] += el.childNodes.length - 1;
+            }
+          }
+        });
+      }
+      removeStyles(body);
+      if (pos && pos[0] && pos[2] && body.contains(pos[0]) && body.contains(pos[2])) {
+        try {
+          sel.setBaseAndExtent(pos[0], pos[1], pos[2], pos[3]);
+        } catch (e) {
+          // 위치가 맞지 않으면 브라우저가 정한 선택을 그대로 둔다.
+        }
+      }
+    }
+
     // ---------- 블록 ----------
+    var SIMPLE_BLOCK = /^(P|H2|H3|H4)$/;
+
+    function isBlankLine(nodes) {
+      return nodes.every(function (n) {
+        if (n.nodeType === 3) return /^[\s\u200B\uFEFF]*$/.test(n.data);
+        if (n.nodeType !== 1) return true;
+        return n.tagName !== 'IMG' && !n.hasAttribute('data-sel') && !n.querySelector('img,br,[data-sel]') && isEmptyNode(n);
+      });
+    }
+
+    /** 꾸밈 태그(strong, span 등) 안에 있는 <br>을 잘라 블록 바로 아래로 꺼낸다(줄 단위로 나누기 위해). */
+    function liftBreaks(block) {
+      Array.prototype.slice.call(block.querySelectorAll('br')).forEach(function (br) {
+        if (br.parentNode === block || !block.contains(br)) return;
+        var top = br;
+        while (top.parentNode !== block) top = top.parentNode;
+        var after = document.createRange();
+        after.setStartAfter(br);
+        after.setEndAfter(top);
+        var rest = after.extractContents();
+        br.parentNode.removeChild(br);
+        block.insertBefore(br, top.nextSibling);
+        if (rest.textContent || (rest.querySelector && rest.querySelector('img,br,[data-sel]'))) {
+          block.insertBefore(rest, br.nextSibling);
+        }
+        if (isBlankLine([top])) block.removeChild(top);
+      });
+    }
+
+    /**
+     * 블록 b를 tag로 바꾼다. 블록 안이 <br>로 여러 줄이면 선택(sel)에 걸친 줄만 새 블록으로 떼어 바꾼다.
+     * 형식이 바뀐 부분은 글자 크기 클래스와 style을 지워 새 형식의 기본 글꼴·크기로 돌아가게 한다.
+     */
+    function convertBlock(b, tag, marks) {
+      if (b.tagName === tag) return;
+      liftBreaks(b);
+      var sel = document.createRange();
+      sel.setStartBefore(marks.start);
+      sel.setEndAfter(marks.end);
+      var lines = [{ nodes: [], br: null }];
+      Array.prototype.slice.call(b.childNodes).forEach(function (n) {
+        if (n.nodeType === 1 && n.tagName === 'BR') lines.push({ nodes: [], br: n });
+        else lines[lines.length - 1].nodes.push(n);
+      });
+      // 마지막 <br>은 빈 줄을 보이게 하려고 붙은 자리표시이므로 줄로 세지 않는다.
+      if (lines.length > 1 && isBlankLine(lines[lines.length - 1].nodes)) lines.pop();
+      var groups = [];
+      lines.forEach(function (ln) {
+        var on = ln.nodes.some(function (n) {
+          return sel.intersectsNode(n);
+        });
+        if (!on && !ln.nodes.length && ln.br) on = sel.intersectsNode(ln.br);
+        if (lines.length === 1) on = true;
+        var g = groups[groups.length - 1];
+        if (g && g.on === on) g.lines.push(ln);
+        else groups.push({ on: on, lines: [ln] });
+      });
+      var parent = b.parentNode;
+      groups.forEach(function (g) {
+        var el = g.on ? document.createElement(tag) : b.cloneNode(false);
+        g.lines.forEach(function (ln, i) {
+          if (i > 0) el.appendChild(document.createElement('br'));
+          ln.nodes.forEach(function (n) {
+            el.appendChild(n);
+          });
+        });
+        if (isBlankLine(g.lines[g.lines.length - 1].nodes)) el.appendChild(document.createElement('br'));
+        parent.insertBefore(el, b);
+        if (g.on) {
+          removeStyles(el);
+          Array.prototype.slice.call(el.querySelectorAll('span')).forEach(function (s) {
+            CLASS_GROUPS.size.forEach(function (c) {
+              s.classList.remove(c);
+            });
+            if (!s.hasAttribute('data-sel') && !s.classList.length) unwrap(s);
+          });
+        }
+      });
+      parent.removeChild(b);
+    }
+
     function setBlock(tag) {
       var r = restoreRange();
       if (!r) return;
-      if (closest(r.startContainer, 'pre,summary,td,th')) {
+      if (closest(r.startContainer, 'pre,summary,td,th') || closest(r.endContainer, 'pre,summary,td,th')) {
         notice('이 위치에서는 문단 형식을 바꿀 수 없습니다.');
+        updateState();
         return;
       }
-      exec('formatBlock', '<' + tag + '>');
+      var blocks = selectedBlocks(r);
+      // 드래그·세 번 누르기로 다음 블록 맨 앞까지 잡힌 경우 그 블록은 빼고 바꾼다.
+      if (blocks.length > 1) {
+        var lastBlock = blocks[blocks.length - 1];
+        var head = document.createRange();
+        head.setStart(lastBlock, 0);
+        head.setEnd(r.endContainer, r.endOffset);
+        if (head.toString().replace(ZWSP, '') === '' && !head.cloneContents().querySelector('img')) {
+          blocks.pop();
+          r = r.cloneRange();
+          r.setEnd(blocks[blocks.length - 1], blocks[blocks.length - 1].childNodes.length);
+        }
+      }
+      var endBlock = blockOf(r.endContainer);
+      var simple =
+        blocks.length > 0 &&
+        blocks[blocks.length - 1] === endBlock &&
+        blocks.every(function (b) {
+          return b.nodeType === 1 && SIMPLE_BLOCK.test(b.tagName);
+        });
+      if (!simple) {
+        // 목록 칸 등은 브라우저 기능으로 바꾼다.
+        exec('formatBlock', '<' + tag + '>');
+        stripInlineStyles();
+      } else {
+        var m = markSelection(r);
+        var TAG = tag.toUpperCase();
+        blocks.forEach(function (b) {
+          convertBlock(b, TAG, m);
+        });
+        restoreMarks(m);
+      }
       changed();
       updateState();
     }
@@ -1480,10 +1636,12 @@
       }
       var sizeSel = toolbar.querySelector('[data-select="size"]');
       if (sizeSel) {
+        // 기본 글자 크기가 '작게'이므로 .fs-small(예전 글)도 '작게'(빈 값)로 보인다.
         var sz = groupAncestor(node, 'size');
-        sizeSel.value = sz ? CLASS_GROUPS.size.filter(function (c) {
+        var szc = sz ? CLASS_GROUPS.size.filter(function (c) {
           return sz.classList.contains(c);
         })[0] : '';
+        sizeSel.value = szc === 'fs-small' ? '' : szc;
       }
       var colorSel = toolbar.querySelector('[data-select="color"]');
       if (colorSel) {
@@ -1884,6 +2042,7 @@
     });
 
     body.addEventListener('input', function (e) {
+      stripInlineStyles();
       if (e.inputType === 'insertText' && e.data && /[*_~`]/.test(e.data)) inlineMarkdown();
       changed();
     });
