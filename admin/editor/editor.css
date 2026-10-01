@@ -1,0 +1,238 @@
+/* 블로그 에디터 화면 (editor_original/css/editor.css의 수정본).
+ * 편집 영역은 블로그 본문(.prose)과 같은 CSS를 쓰고, 여기서는 툴바와 편집 중 표시만 정한다.
+ * 색·간격은 src/styles/tokens.css 변수를 쓴다. */
+
+.be {
+  position: relative;
+}
+
+/* 툴바 */
+.be-toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px var(--space-1);
+  padding: 4px 0;
+  background: var(--color-paper);
+  border-bottom: 1px solid var(--color-text-muted);
+}
+
+.be-group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.be-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 28px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+}
+
+.be-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.be-btn:hover,
+.be-btn:focus-visible {
+  border-color: var(--color-text-muted);
+}
+
+.be-btn[aria-pressed='true'] {
+  border-color: var(--color-link);
+  color: var(--color-link);
+  background: rgba(255, 255, 255, 0.5);
+}
+
+.be-select {
+  height: 28px;
+  padding: 0 2px;
+  border: 1px solid var(--color-text-muted);
+  border-radius: 3px;
+  background: transparent;
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: var(--font-size-small);
+}
+
+.be-text-btn {
+  height: 26px;
+  padding: 0 var(--space-1);
+  border: 1px solid var(--color-link);
+  border-radius: 0;
+  background: var(--color-paper);
+  color: var(--color-link);
+  font-family: var(--font-body);
+  font-size: var(--font-size-small);
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.be-text-btn:hover,
+.be-text-btn:focus-visible,
+.be-text-btn[aria-pressed='true'] {
+  background: var(--color-link);
+  color: var(--color-paper);
+}
+
+/* 표·이미지 도구, 작은 창 */
+.be-tablebar,
+.be-imagebar,
+.be-popover {
+  position: absolute;
+  z-index: 6;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  max-width: 100%;
+  padding: 6px;
+  border: 1px solid var(--color-text-muted);
+  background: var(--color-paper);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  font-size: var(--font-size-small);
+  line-height: 1.4;
+}
+
+.be-popover {
+  flex-direction: column;
+}
+
+.be-pop-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 0;
+}
+
+.be-pop-row input {
+  width: min(320px, 60vw);
+  height: 26px;
+  padding: 0 4px;
+  border: 0;
+  border-bottom: 1px solid var(--color-text-muted);
+  background: transparent;
+  color: var(--color-text);
+  font: inherit;
+}
+
+.be-pop-label {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.be-table-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cols), 18px);
+  gap: 2px;
+}
+
+.be-table-grid button {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid var(--color-text-muted);
+  background: transparent;
+  cursor: pointer;
+}
+
+.be-table-grid button.is-on {
+  background: var(--color-hl-blue);
+  border-color: var(--color-link);
+}
+
+/* 편집 영역: 자기 자신의 괘선을 그려, 화면 어디에 있어도 글자가 괘선 위에 놓이게 한다. */
+.be-body {
+  min-height: calc(var(--line-height-rule) * 14);
+  margin-top: var(--line-height-rule);
+  padding: 0 var(--space-1);
+  outline: none;
+  background-color: var(--color-paper);
+  background-image: linear-gradient(
+    to bottom,
+    transparent calc(var(--line-height-rule) - 1px),
+    var(--color-rule) calc(var(--line-height-rule) - 1px)
+  );
+  background-size: 100% var(--line-height-rule);
+  background-position: 0 var(--rule-offset);
+  box-shadow: inset 2px 0 0 transparent;
+  caret-color: var(--color-link);
+}
+
+.be-body:focus {
+  box-shadow: inset 2px 0 0 var(--color-link);
+}
+
+/* 편집 중에는 블러 글자가 읽히도록 약하게만 흐리고 점선으로 표시한다. */
+.be-body.prose .spoiler {
+  filter: blur(1.2px);
+  outline: 1px dashed var(--color-text-muted);
+  cursor: text;
+}
+
+.be-body summary {
+  cursor: text;
+}
+
+.be-body summary::before {
+  cursor: pointer;
+}
+
+.be-body img {
+  cursor: pointer;
+}
+
+.be-body img.is-selected {
+  outline: 3px solid var(--color-link);
+}
+
+/* 코드 블록 언어 표시 */
+.be-body pre {
+  position: relative;
+}
+
+.be-body pre:has(> code.language-sql)::after,
+.be-body pre:has(> code.language-python)::after {
+  position: absolute;
+  top: 0;
+  right: var(--space-1);
+  color: var(--color-text-muted);
+  font-family: var(--font-body);
+  font-size: 12px;
+  line-height: var(--line-height-rule);
+  pointer-events: none;
+}
+
+.be-body pre:has(> code.language-sql)::after {
+  content: 'SQL';
+}
+
+.be-body pre:has(> code.language-python)::after {
+  content: 'Python';
+}
+
+/* 표 칸이 비어 있어도 누를 수 있게 */
+.be-body td,
+.be-body th {
+  min-width: 3em;
+}
+
+.be [hidden] {
+  display: none !important;
+}
