@@ -1,0 +1,2 @@
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=["_astro/sticker-mode.DBC8EEFM.js","_astro/site.CnohQS5O.js","_astro/token.C0hbnQ-7.js","_astro/github.9IC2Ktgx.js","_astro/postfile.DjCJZT6d.js","_astro/leave-guard.DONrCfZB.js"])))=>i.map(i=>d[i]);
+import{r as e}from"./token.C0hbnQ-7.js";import{t}from"./preload-helper.B3nfOi5I.js";document.addEventListener(`astro:page-load`,()=>{document.querySelector(`[data-sticker-layer]`)&&e()&&t(()=>import(`./sticker-mode.DBC8EEFM.js`).then(e=>e.setupStickerMode()),__vite__mapDeps([0,1,2,3,4,5]))});

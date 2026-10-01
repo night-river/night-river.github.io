@@ -157,7 +157,8 @@
   border-color: var(--color-link);
 }
 
-/* 편집 영역: 자기 자신의 괘선을 그려, 화면 어디에 있어도 글자가 괘선 위에 놓이게 한다. */
+/* 편집 영역: 자기 자신의 괘선을 그려, 화면 어디에 있어도 글자가 괘선 위에 놓이게 한다.
+   위쪽 여백은 editor-page.ts(alignBodyToRules)가 페이지 괘선에 맞춰 반 줄 안에서 조절한다. */
 .be-body {
   min-height: calc(var(--line-height-rule) * 14);
   margin-top: var(--line-height-rule);
